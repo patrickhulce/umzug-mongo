@@ -14,9 +14,46 @@ describe('umzug.js', function () {
       }).should.fail;
     });
 
+    it('should succeed when connection is not set but collection is', function () {
+      (function () {
+        new UmzugMongo({collection: collectionApi});
+      }).should.not.fail;
+    });
+
     it('should default collectionName to migrations', function () {
-      var obj = new UmzugMongo({storageOptions: {connection: {}}});
+      var obj = new UmzugMongo({storageOptions: {connection: connectionApi}});
       obj.should.have.property('collectionName', 'migrations');
+    });
+
+    it('should add the connection to migration params', function () {
+      var options = {
+        storageOptions: {connection: connectionApi},
+        migrations: {params: []},
+      };
+
+      var obj = new UmzugMongo(options);
+      obj.should.have.property('collection');
+      options.should.have.deep.property('migrations.params.0', connectionApi);
+    });
+
+    it('should not add the connection to migration params if they are already set', function () {
+      var params = [collectionApi, {}];
+      var options = {
+        storageOptions: {connection: connectionApi},
+        migrations: {params: _.clone(params)},
+      };
+
+      var obj = new UmzugMongo(options);
+      obj.should.have.property('collection');
+      options.should.have.deep.property('migrations.params').eql(params);
+    });
+
+    it('should make a connection to collection', function () {
+      var connection = _.clone(connectionApi);
+      var collectionStub = sinon.stub(connection, 'collection').returns({hello: 'world'});
+      var obj = new UmzugMongo({storageOptions: {connection: connection}});
+      obj.should.have.property('collection').eql({hello: 'world'});
+      collectionStub.should.have.been.calledWith('migrations');
     });
   });
 
@@ -27,9 +64,9 @@ describe('umzug.js', function () {
       var connection = _.clone(connectionApi);
       var collection = _.clone(collectionApi);
 
-      plugin = new UmzugMongo({storageOptions: {connection: connection}});
       sinon.stub(connection, 'collection').returns(collection);
       insertOne = sinon.stub(collection, 'insertOne');
+      plugin = new UmzugMongo({storageOptions: {connection: connection}});
     });
 
     it('should insertOne with object', function () {
@@ -49,9 +86,9 @@ describe('umzug.js', function () {
       var connection = _.clone(connectionApi);
       var collection = _.clone(collectionApi);
 
-      plugin = new UmzugMongo({storageOptions: {connection: connection}});
       sinon.stub(connection, 'collection').returns(collection);
       updateOne = sinon.stub(collection, 'updateOne');
+      plugin = new UmzugMongo({storageOptions: {connection: connection}});
     });
 
     it('should updateOne with object', function () {
@@ -74,8 +111,7 @@ describe('umzug.js', function () {
       var cursor = _.clone(cursorApi);
 
       promise = _.clone(promiseApi);
-      plugin = new UmzugMongo({storageOptions: {connection: connection}});
-      sinon.stub(connection, 'collection').returns(collection);
+      plugin = new UmzugMongo({storageOptions: {collection: collection}});
       find = sinon.stub(collection, 'find').returns(cursor);
       sort = sinon.stub(cursor, 'sort').returns(cursor);
       sinon.stub(cursor, 'toArray').returns(promise);
