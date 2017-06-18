@@ -57,6 +57,16 @@ describe('umzug.js', function () {
     });
   });
 
+  describe('accepts config on top level instead nested storageOptions', function() {
+    it('should make a connection to collection', function() {
+        var connection = _.clone(connectionApi);
+        var collectionStub = sinon.stub(connection, 'collection').returns({hello: 'world'});
+        var obj = new UmzugMongo({connection: connection});
+        obj.should.have.property('collection').eql({hello: 'world'});
+        collectionStub.should.have.been.calledWith('migrations');
+    });
+  });
+
   describe('#logMigration', function () {
     var plugin, insertOne;
 
