@@ -74,7 +74,7 @@
   },
   "peerDependencies": {
     "mongodb": "^2.2.0",
-    "umzug": "^1.11.0"
+    "umzug": "^1.11.0 || ^2.0.0"
   },
   "devDependencies": {
     "chai": "^3.5.0",
