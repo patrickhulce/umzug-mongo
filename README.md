@@ -1,3 +1,7 @@
+### ATTENTION
+
+You probably don't need this library, umzug has been updated to natively support [mongo migrations](https://github.com/sequelize/umzug#mongodbstorage) as of v2.1.
+
 # umzug-mongo
 [![NPM Package](https://badge.fury.io/js/umzug-mongo.svg)](https://www.npmjs.com/package/umzug-mongo)
 [![Build Status](https://travis-ci.org/patrickhulce/umzug-mongo.svg?branch=master)](https://travis-ci.org/patrickhulce/umzug-mongo)
